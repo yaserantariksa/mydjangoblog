@@ -1,0 +1,79 @@
+{% extends "layout/main.html" %}
+{% load static %}
+
+<!-- BLOCK META CONTENT -->
+{%block content %}	
+<section style="padding-top:3em;padding-bottom:3em;">
+	<h1 class="header-text">Kami membuat <span class="text-ornament">lebih</span> dari sekedar web</h1>
+</section>
+<section style="margin-bottom:2em;">
+	<h1>Tags Artikel</h1>
+    <div style="display:flex; gap:5px; margin-top:.6em;">
+        {% for tag in tags %}
+        <p>{{ tag.title }}</p>
+        {% endfor %}
+    </div>
+</section>
+<section>
+	<h1>Artikel Terbaru</h1>
+	<div style="margin-bottom: 2em; margin-top:.6em;">
+		<form action="" method="get">
+			<div class="input-group">
+				<input
+					type="text"
+					name="search"
+					class="form-control"
+					id="search"
+					placeholder="Search for blog posts by title and tags"
+					value="{% if search %}{{search}}{% endif %}"
+					autofocus
+				/>
+				<input type="submit" value="Search" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+	<div class="posts-wrapper">
+		{% for post in posts|dictsortreversed:"updated_at" %}
+		<div class="post-card">
+			<a href="/{{post.slug}}" class="title-link"><h1>{{ post.title }}</h1></a>
+			<div style="display: flex; gap: 1em">
+				{% for tag in post.tags.all %}
+				<p>{{tag}}</p>
+				{% endfor %}
+			</div>
+			<p>{{post.updated_at}}</p>
+			<img
+				class="featured-img"
+				src="{% if post.image %}{{post.image.url}}{% else %}{% static 'media/placeholder.png' %}{% endif %}"
+				alt="{{post.title}}"
+			/>
+			<p>{{post.content.html|safe|truncatewords:40}}</p>
+		</div>
+		{% endfor %}
+	</div>
+	<div class="pagination">
+		<span class="step-links">
+			{% if posts.has_previous %}
+			<a class="nav-link" href="?page=1">&laquo; first</a>
+			<a class="nav-link" href="?page={{ posts.previous_page_number }}"
+				>previous</a
+			>
+			{% endif %}
+
+			<span class="current">
+				Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
+			</span>
+
+			{% if posts.has_next %}
+			<a class="nav-link" href="?page={{ posts.next_page_number }}"
+				>next</a
+			>
+			<a class="nav-link" href="?page={{ posts.paginator.num_pages }}"
+				>last &raquo;</a
+			>
+			{% endif %}
+		</span>
+	</div>
+</section>
+{% endblock content %}
+<!-- END BLOCK META CONTENT -->
